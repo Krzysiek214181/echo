@@ -1,4 +1,4 @@
 /node_modules
 .env
-/logs
+/dist/logs
 /dist/apiKeys.json
