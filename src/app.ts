@@ -38,12 +38,13 @@ process.on('unhandledRejection', async (error)=>{
     const GOOGLE_CLIENT_ID = getEnvVar("GOOGLE_CLIENT_ID");
     const GOOGLE_CLIENT_SECRET = getEnvVar("GOOGLE_CLIENT_SECRET");
     const GOOGLE_REDIRECT = getEnvVar("GOOGLE_REDIRECT");
+    const GOOGLE_SHARED_CALENDAR_ID = getEnvVar("GOOGLE_SHARED_CALENDAR_ID");
 // #endregion
 
 const app = express();
 
-const googleService = new GoogleService(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT);
-googleService.init();
+const googleService = new GoogleService(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT, GOOGLE_SHARED_CALENDAR_ID);
+await googleService.init();
 
 app.use(express.json());
 

@@ -42,6 +42,8 @@ however, i do not release the built image, because i think `echo` is not really 
 * `GOOGLE_CLIENT_SECRET` **-** the *Client Secret* from Google Cloud
   
 * `GOOGLE_REDIRECT` **-** the *Authorized redirect URI* for the client from Google Cloud
+
+* `GOOGLE_SHARED_CALENDAR_ID` **-** the *ID* of a shared google calendar you want to be able to view
   
 * `OPENAI_API_KEY` **-** the *API KEY* from OpenAI Platform
 
@@ -65,6 +67,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT=${GOOGLE_REDIRECT}
+      - GOOGLE_SHARED_CALENDAR_ID=${GOOGLE_SHARED_CALENDAR_ID}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - <your_path>:/app/.googleToken
@@ -77,5 +80,5 @@ make sure you also have an `.env` file in the same directory, filled accordingly
 ## example docker run
 
 ```bash
-docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/.googleToken -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
+docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e GOOGLE_SHARED_CALENDAR_ID=<calendar_id> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/.googleToken -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
 ```
