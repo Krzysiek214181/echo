@@ -1,4 +1,9 @@
 /node_modules
 .env
 /dist/logs
+<<<<<<< Updated upstream
 /dist/apiKeys.json
+=======
+/dist/apiKeys.json
+/dist/.googleToken.json
+>>>>>>> Stashed changes

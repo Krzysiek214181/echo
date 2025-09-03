@@ -3,10 +3,11 @@ import express from "express";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { GoogleService } from "./GoogleService.js";
 
 dotenv.config({quiet: true});
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
 
 // #region ensure/create logs folder & unhandled error logging
 try{
@@ -33,11 +34,22 @@ process.on('unhandledRejection', async (error)=>{
 
 // #region laod environmental variables
     const _PORT = getEnvVar("PORT");
+    getEnvVar("OPENAI_API_KEY");
+    const GOOGLE_CLIENT_ID = getEnvVar("GOOGLE_CLIENT_ID");
+    const GOOGLE_CLIENT_SECRET = getEnvVar("GOOGLE_CLIENT_SECRET");
+    const GOOGLE_REDIRECT = getEnvVar("GOOGLE_REDIRECT");
 // #endregion
 
 const app = express();
 
+const googleService = new GoogleService(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT);
+googleService.init();
+
 app.use(express.json());
+
+app.get("/googleAuth", (req, res)=>{
+    res.sendFile(path.join(__dirname, "public", "googleAuth.html"));
+});
 
 app.listen(_PORT, ()=>{
     log(`listening on port ${_PORT}`);

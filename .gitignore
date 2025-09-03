@@ -2,3 +2,4 @@
 .env
 /dist/logs
 /dist/apiKeys.json
+/dist/.googleToken.json

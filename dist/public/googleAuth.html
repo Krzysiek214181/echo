@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>authorize echo</title>
+</head>
+<style>
+     body {
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        height: 90vh;
+        width: 100dvw;
+        background-color: rgb(10, 10, 10);
+        gap: 16px;
+     }
+
+     #code{
+        background-color: rgb(31, 31, 31); 
+        padding: 16px 24px;
+         border-radius: 8px;
+          color: rgb(220, 220, 220);
+     }
+
+     #code:hover{
+        cursor: pointer;
+     }
+</style>
+<body>
+    <h1 style='color: rgb(220, 220, 220);'>paste the code below into the terminal</h1>
+    <p style='color: rgb(220, 220, 220); margin: 0; padding: 0;'> ( click to copy )</p>
+    <h2 id="code"></h2>
+</body>
+<script>
+    const code = new URLSearchParams(window.location.search).get('code');
+    const codeElement = document.getElementById('code')
+    codeElement.textContent = code;
+    codeElement.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(code);
+    });
+</script>
+</html>
