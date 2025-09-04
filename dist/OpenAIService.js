@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { logError } from "./app";
-import { conversationPrompt } from "./prompts";
+import { logError } from "./utilities.js";
+import { conversationPrompt } from "./prompts.js";
 export class OpenAIService {
     constructor() {
         //tools for converstation model to use

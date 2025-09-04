@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import { ChatCompletionMessageParam, ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/index";
 
-import { log, logError } from "./app";
-import { conversationPrompt, roomPrompt } from "./prompts";
+import { log, logError } from "./utilities.js";
+import { conversationPrompt, roomPrompt } from "./prompts.js";
 
 export class OpenAIService{
     private openai: OpenAI

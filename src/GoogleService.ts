@@ -3,14 +3,13 @@ import path from 'path';
 import fs from 'fs/promises';
 import readline from 'readline';
 
-import { log, logError, __dirname } from './app.js';
+import { log, logError, __dirname } from './utilities.js';
 
 type ParsedEvent = {
     title: string;
     start?: string;
     end?: string;
 };
-
 type CalendarType = "private" | "shared" | "all";
 
 export class GoogleService  {
@@ -127,7 +126,7 @@ export class GoogleService  {
     };
 
     //creates event in the corresponding calendar, if fullDay is false, duration is in hours, if true, in days
-    async createCalendarEvent(calendarType: Exclude<CalendarType, "all">,title: string, startDate: Date, fullDay = false, duration?: number){
+    async createCalendarEvent(calendarType: Exclude<CalendarType, "all">, title: string, startDate: Date, fullDay = false, duration?: number){
         try{
             let calendarID: string = "";
             let start: calendar_v3.Schema$EventDateTime = {timeZone: this.timezone};
@@ -180,6 +179,7 @@ export class GoogleService  {
         };
     };
 
+    //helper function for getCalendarEvents()
     private parseCalendarEvents(events: calendar_v3.Schema$Event[], includeDates = false){
         const parsedEvents = events.map((event) =>{
             const parsedEvent: ParsedEvent = {

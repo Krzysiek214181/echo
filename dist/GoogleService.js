@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import path from 'path';
 import fs from 'fs/promises';
 import readline from 'readline';
-import { log, logError, __dirname } from './app.js';
+import { log, logError, __dirname } from './utilities.js';
 export class GoogleService {
     constructor(clientId, clientSecret, redirectUri, sharedCalendarID, timezone) {
         this.clientId = clientId;
@@ -163,6 +163,7 @@ export class GoogleService {
         ;
     }
     ;
+    //helper function for getCalendarEvents()
     parseCalendarEvents(events, includeDates = false) {
         const parsedEvents = events.map((event) => {
             const parsedEvent = {
