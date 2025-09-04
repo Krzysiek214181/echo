@@ -34,6 +34,7 @@ process.on('unhandledRejection', async (error)=>{
 
 // #region laod environmental variables
     const _PORT = getEnvVar("PORT");
+    const _TIMEZONE = getEnvVar("TIMEZONE");
     getEnvVar("OPENAI_API_KEY");
     const GOOGLE_CLIENT_ID = getEnvVar("GOOGLE_CLIENT_ID");
     const GOOGLE_CLIENT_SECRET = getEnvVar("GOOGLE_CLIENT_SECRET");
@@ -42,9 +43,6 @@ process.on('unhandledRejection', async (error)=>{
 // #endregion
 
 const app = express();
-
-const googleService = new GoogleService(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT, GOOGLE_SHARED_CALENDAR_ID);
-await googleService.init();
 
 app.use(express.json());
 
@@ -55,6 +53,9 @@ app.get("/googleAuth", (req, res)=>{
 app.listen(_PORT, ()=>{
     log(`listening on port ${_PORT}`);
 });
+
+const googleService = new GoogleService(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT, GOOGLE_SHARED_CALENDAR_ID, _TIMEZONE);
+await googleService.init();
 
 //function to access .env variables with Error handlig
 function getEnvVar(name: string): string {

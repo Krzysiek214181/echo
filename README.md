@@ -36,6 +36,8 @@ however, i do not release the built image, because i think `echo` is not really 
 ### environmental variables
 
 * `PORT` **-** the port the app will be listening on
+
+* `TIMEZONE` **-** the timezone you're in (example: "Europe/Warsaw")
   
 * `GOOGLE_CLIENT_ID` **-** the *Client ID* from Google Cloud
   
@@ -64,6 +66,7 @@ services:
       - ${PORT}
     environment:
       - PORT=${PORT}
+      - TIMEZONE=${TIMEZONE}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT=${GOOGLE_REDIRECT}
@@ -80,5 +83,5 @@ make sure you also have an `.env` file in the same directory, filled accordingly
 ## example docker run
 
 ```bash
-docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e GOOGLE_SHARED_CALENDAR_ID=<calendar_id> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/.googleToken -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
+docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e TIMEZONE=<timezone> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e GOOGLE_SHARED_CALENDAR_ID=<calendar_id> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/.googleToken -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
 ```
