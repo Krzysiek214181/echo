@@ -95,6 +95,8 @@ export class GoogleService  {
                     calendarIDs.push(this.sharedCalendarID);
                     break;
             };
+
+            if(dayAmount > 1) includeDates = true
             
             const startTime = new Date();
             startTime.setDate(startDate.getDate());
@@ -179,6 +181,73 @@ export class GoogleService  {
         };
     };
 
+    //get the id, from and subject of quantity latest mails
+    async getMail(quantity: number){
+        try{
+            const response = await this.gmail.users.messages.list({
+                userId: "me",
+                maxResults: quantity,
+                q: "is:unread"
+            });
+
+            if (!response.data.messages) return "error while getting messages";
+
+            const parsedMails = await Promise.all(response.data.messages.map(async (message) => {
+                if (!message.id) {
+                    logError("error while getting mail, no id found", "error while getting mail, no id found");
+                    return;
+                };
+
+                const id = message.id;
+
+                const mail = await this.gmail.users.messages.get({
+                    userId: "me",
+                    id: id,
+                    format: "metadata"
+                });
+
+                if (!mail.data.payload?.headers) {
+                    logError("error while getting mail, no headers found", "error while getting mail, no headers found");
+                    return;
+                };
+
+                return this.parseMailMessage(mail.data.payload?.headers, id);
+            }));
+
+            return parsedMails;
+        }catch(error){
+            logError(error);
+        };
+    };
+
+    async getFullMail(id: string){
+        try{
+            const response = await this.gmail.users.messages.get({
+                userId: "me",
+                id: id,
+                format: "full"
+            });
+
+            if(!response.data.payload?.parts){
+                logError("error while retrieving full mail, no data.parts", "error while retrieving full mail, no data.parts");
+                return "error while retrieving mail";
+            };
+            
+            const part = response.data?.payload?.parts[0];
+            
+            if(!part.body?.data){
+                logError("error while retrieving full mail, no part.body", "error while retrieving full mail, no part.body");
+                return "error while retrieving mail";
+            };
+
+            const data = part.body.data;
+            const base64 = data.replace(/-/g, "+").replace(/_/g, "/")
+            return Buffer.from(base64, "base64").toString('utf-8');
+        }catch(error){
+            logError(error, "error while retrieving full mail, check error_log.txt");
+        }
+    };
+
     //helper function for getCalendarEvents()
     private parseCalendarEvents(events: calendar_v3.Schema$Event[], includeDates = false){
         const parsedEvents = events.map((event) =>{
@@ -197,5 +266,16 @@ export class GoogleService  {
             return parsedEvent;
         });
         return parsedEvents;
+    };
+
+    private parseMailMessage(headersData: gmail_v1.Schema$MessagePartHeader[], id: string){
+        const subject = headersData.find(h => h.name === "Subject")?.value;
+        const from = headersData.find(h => h.name === "From")?.value;
+
+        return {
+            id: id,
+            from: from,
+            subject: subject
+        };
     };
 };
