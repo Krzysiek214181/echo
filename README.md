@@ -52,6 +52,8 @@ however, i do not release the built image, because i think `echo` is not really 
 * `SPOTIFY_CLIENT_SECRET` **-** the *Client Secret* from your *Spotify for Developers* app
 
 * `SPOTIFY_REDIRECT` **-** the *Redirect URI* from your *Spotify for Developers* app
+
+* `SPOTIFY_DEFAULT_DEVICE` **-** **optional**, *Device ID* of the default device for spotify to use when no device is active
   
 * `OPENAI_API_KEY` **-** the *API KEY* from OpenAI Platform
 
@@ -80,6 +82,7 @@ services:
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
       - SPOTIFY_REDIRECT=${SPOTIFY_REDIRECT}
+      - SPOTIFY_DEFAULT_DEVICE=${SPOTIFY_DEFAULT_DEVICE} // optional
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - <your_path>:/app/tokens/
@@ -92,5 +95,5 @@ make sure you also have an `.env` file in the same directory, filled accordingly
 ## example docker run
 
 ```bash
-docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e TIMEZONE=<timezone> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e GOOGLE_SHARED_CALENDAR_ID=<calendar_id> -e SPOTIFY_CLIENT_ID=<client_id> -e SPOTIFY_CLIENT_SECRET=<client_secret> -e SPOTIFY_REDIRECT=<redirect_uri> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/tokens/ -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
+docker run -d --name echo --expose <selected_port> -e PORT=<selected_port> -e TIMEZONE=<timezone> -e GOOGLE_CLIENT_ID=<client_id> -e GOOGLE_CLIENT_SECRET=<client_secret> -e GOOGLE_REDIRECT=<redirect_url> -e GOOGLE_SHARED_CALENDAR_ID=<calendar_id> -e SPOTIFY_CLIENT_ID=<client_id> -e SPOTIFY_CLIENT_SECRET=<client_secret> -e SPOTIFY_REDIRECT=<redirect_uri> -e SPOTIFY_DEFAULT_DEVICE=<optional_device_id> -e OPENAI_API_KEY=<openai_api_key> -v <your_path>:/app/tokens/ -v <your_path>:/app/logs/ --restart unless-stopped <image_name>
 ```

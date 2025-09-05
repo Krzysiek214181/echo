@@ -52,3 +52,20 @@ export async function logError(error, logMessage) {
     ;
 }
 ;
+export async function ensureDirectory(dirname) {
+    try {
+        await fs.stat(path.join(__dirname, dirname));
+        log(`Directory '${dirname}' exists, continuing...`);
+    }
+    catch (error) {
+        if (error.code == 'ENOENT') {
+            await fs.mkdir(path.join(__dirname, dirname));
+            log(`Directory '${dirname}' created, continuing...`);
+        }
+        else {
+            logError(error);
+        }
+        ;
+    }
+    ;
+}

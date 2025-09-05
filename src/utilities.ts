@@ -42,3 +42,17 @@ export async function logError(error: any, logMessage?: string){
         console.error(`Failed to write to error log: ${error}`);
     };
 };
+
+export async function ensureDirectory(dirname: string){
+    try{
+        await fs.stat(path.join(__dirname, dirname));
+        log(`Directory '${dirname}' exists, continuing...`);
+    }catch( error: any ){
+        if (error.code == 'ENOENT'){
+            await fs.mkdir(path.join(__dirname, dirname));
+            log(`Directory '${dirname}' created, continuing...`);
+        }else{
+            logError(error);
+        };
+    };
+}
