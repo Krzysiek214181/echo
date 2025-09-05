@@ -13,8 +13,9 @@ type ParsedEvent = {
 type CalendarType = "private" | "shared" | "all";
 
 export class GoogleService  {
-    private tokenPath = path.join(__dirname, ".googleToken.json");
+    private tokenPath = path.join(__dirname, "tokens", ".googleToken.json");
     private oAuth2Client;
+    private scopes: string[] = ['https://www.googleapis.com/auth/calendar.events','https://mail.google.com/'];
     public calendar!: calendar_v3.Calendar
     public gmail!: gmail_v1.Gmail
 
@@ -42,14 +43,9 @@ export class GoogleService  {
 
     private async getNewToken(){
         try{
-            const scopes = [
-                'https://www.googleapis.com/auth/calendar.events',
-                'https://mail.google.com/'
-            ];
-
             const authUrl = this.oAuth2Client.generateAuthUrl({
                 access_type: 'offline',
-                scope: scopes,
+                scope: this.scopes,
                 prompt: "consent"
             });
 

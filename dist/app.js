@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import { getEnvVar, logError, log, __dirname } from "./utilities.js";
 import { GoogleService } from "./GoogleService.js";
+import { SpotifyService } from "./SpotifyService.js";
 dotenv.config({ quiet: true });
 // #region ensure/create logs folder & unhandled error logging
 try {
@@ -31,21 +32,26 @@ process.on('unhandledRejection', async (error) => {
 });
 // #endregion
 // #region laod environmental variables
-const _PORT = getEnvVar("PORT");
+export const _PORT = getEnvVar("PORT");
 const _TIMEZONE = getEnvVar("TIMEZONE");
 getEnvVar("OPENAI_API_KEY");
 const GOOGLE_CLIENT_ID = getEnvVar("GOOGLE_CLIENT_ID");
 const GOOGLE_CLIENT_SECRET = getEnvVar("GOOGLE_CLIENT_SECRET");
 const GOOGLE_REDIRECT = getEnvVar("GOOGLE_REDIRECT");
 const GOOGLE_SHARED_CALENDAR_ID = getEnvVar("GOOGLE_SHARED_CALENDAR_ID");
+const SPOTIFY_CLIENT_ID = getEnvVar("SPOTIFY_CLIENT_ID");
+const SPOTIFY_CLIENT_SECRET = getEnvVar("SPOTIFY_CLIENT_SECRET");
+const SPOTIFY_REDIRECT = getEnvVar("SPOTIFY_REDIRECT");
 // #endregion
 const app = express();
 app.use(express.json());
-app.get("/googleAuth", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "googleAuth.html"));
-});
+app.get("/googleAuth", (req, res) => res.sendFile(path.join(__dirname, "public", "googleAuth.html")));
+app.get("/spotifyAuth", (req, res) => spotifyService.handleCallback(req, res));
+app.get("/authorizeSpotify", (req, res) => spotifyService.redirectLogin(req, res));
 app.listen(_PORT, () => {
     log(`listening on port ${_PORT}`);
 });
 const googleService = new GoogleService(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT, GOOGLE_SHARED_CALENDAR_ID, _TIMEZONE);
 await googleService.init();
+const spotifyService = new SpotifyService(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT);
+await spotifyService.init();

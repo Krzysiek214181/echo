@@ -10,7 +10,8 @@ export class GoogleService {
         this.redirectUri = redirectUri;
         this.sharedCalendarID = sharedCalendarID;
         this.timezone = timezone;
-        this.tokenPath = path.join(__dirname, ".googleToken.json");
+        this.tokenPath = path.join(__dirname, "tokens", ".googleToken.json");
+        this.scopes = ['https://www.googleapis.com/auth/calendar.events', 'https://mail.google.com/'];
         this.oAuth2Client = new google.auth.OAuth2(this.clientId, this.clientSecret, this.redirectUri);
     }
     ;
@@ -31,13 +32,9 @@ export class GoogleService {
     ;
     async getNewToken() {
         try {
-            const scopes = [
-                'https://www.googleapis.com/auth/calendar.events',
-                'https://mail.google.com/'
-            ];
             const authUrl = this.oAuth2Client.generateAuthUrl({
                 access_type: 'offline',
-                scope: scopes,
+                scope: this.scopes,
                 prompt: "consent"
             });
             console.log(`authorize google here: ${authUrl}`);
