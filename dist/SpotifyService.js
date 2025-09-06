@@ -129,40 +129,47 @@ export class SpotifyService {
     }
     ;
     async search(query, type = "track", limit = 5) {
-        const response = await this.spotify.search(query, [type], undefined, limit);
-        let parsed;
-        switch (type) {
-            case "track":
-                parsed = response.tracks.items.map(track => {
-                    const artists = track.artists.map(artist => artist.name);
-                    return {
-                        name: track.name,
-                        artists: artists,
-                        album: track.album.name,
-                        uri: track.uri
-                    };
-                });
-                break;
-            case "album":
-                parsed = response.albums.items.map(album => {
-                    const artists = album.artists.map(artist => artist.name);
-                    return {
-                        name: album.name,
-                        artists: artists,
-                        uri: album.uri
-                    };
-                });
-                break;
-            case "artist":
-                parsed = response.artists.items.map(artist => {
-                    return {
-                        name: artist.name,
-                        uri: artist.uri
-                    };
-                });
+        try {
+            const response = await this.spotify.search(query, [type], undefined, limit);
+            let parsed;
+            switch (type) {
+                case "track":
+                    parsed = response.tracks.items.map(track => {
+                        const artists = track.artists.map(artist => artist.name);
+                        return {
+                            name: track.name,
+                            artists: artists,
+                            album: track.album.name,
+                            uri: track.uri
+                        };
+                    });
+                    break;
+                case "album":
+                    parsed = response.albums.items.map(album => {
+                        const artists = album.artists.map(artist => artist.name);
+                        return {
+                            name: album.name,
+                            artists: artists,
+                            uri: album.uri
+                        };
+                    });
+                    break;
+                case "artist":
+                    parsed = response.artists.items.map(artist => {
+                        return {
+                            name: artist.name,
+                            uri: artist.uri
+                        };
+                    });
+            }
+            ;
+            return parsed;
+        }
+        catch (error) {
+            logError(error, "error while searching spotify, check error_log.txt");
+            return "error while searching";
         }
         ;
-        return parsed;
     }
     ;
     async play(query, type = "track") {
@@ -183,6 +190,8 @@ export class SpotifyService {
             ;
             if (query) {
                 const result = await this.search(query, type, 1);
+                if (typeof result === "string")
+                    return result;
                 if (type === "track") {
                     uri = [result[0].uri];
                 }
@@ -193,10 +202,15 @@ export class SpotifyService {
             }
             ;
             await this.spotify.player.startResumePlayback(deviceId, contextUri, uri);
+            return "playback started succesfully";
         }
         catch (error) {
-            if (!error.message.includes("JSON"))
+            if (!error.message.includes("JSON")) {
                 logError(error, "error while start/resume spotify playback, check error_log.txt");
+                return "error while starting / resuming playback";
+            }
+            ;
+            return "playback started succesfully";
             //errors with JSON are most likely sdk bugs
         }
         ;
@@ -205,12 +219,14 @@ export class SpotifyService {
     async addtoQueue(query) {
         try {
             const result = await this.search(query, undefined, 1);
+            if (typeof result === "string")
+                return result;
             await this.spotify.player.addItemToPlaybackQueue(result[0].uri);
         }
         catch (error) {
             if (!error.message.includes("Unexpected token"))
                 logError(error, "error while adding to spotify queue, check error_log.txt");
-            //a bug in the sdk throws an error even if added succesfully, the line above ignores that
+            //ingore sdk bug
         }
         ;
     }
@@ -222,7 +238,7 @@ export class SpotifyService {
         catch (error) {
             if (!error.message.includes("Unexpected"))
                 logError(error, "error while toggling spotify shuffle, check error_log.txt");
-            //same case as with addtoQueue()
+            //ignore sdk bug
         }
         ;
     }
