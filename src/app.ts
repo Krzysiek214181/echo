@@ -85,7 +85,6 @@ async function handlePrompt(prompt: string){
     try{
         const response = await conversationAgent.run(messages);
         messages.push({role: 'assistant', content: response});
-        log(`response aquired`);
         return response;
     }
     catch(error){

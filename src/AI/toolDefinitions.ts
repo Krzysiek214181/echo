@@ -22,9 +22,12 @@ export const router_tools = [
         description: 'Calls the GoogleAgent to perform given tasks related to google services (calendar and mail)',
         parameters: {
             type: 'object',
-            message: {
-                type: 'string',
-                description: 'Here you write what tasks the GoogleAgent should perform, be specific'
+            properties:{
+                message: 
+                {
+                    type: 'string',
+                    description: 'Here you write what tasks the GoogleAgent should perform, be specific'
+                }
             }
         },
         additionalProperties: false,
@@ -43,28 +46,28 @@ export const router_tools = [
 export const media_tools = [
     {
         type: 'function',
-            name: 'play',
-            description: 'Plays the given song on spotify, if no song is provided, it will resume the current playback.',
-            parameters: {
-                type: 'object',
-                properties: {
-                    query: 
-                        {
-                        type: 'string',
-                        description: 'The name of the song, album or artist to play. If not provided, it will resume the current playback.'
-                        },
-                    type: 
-                        {
-                        type: 'string',
-                        enum: ['track', 'album', 'artist'],
-                        description: 'The type of the query parameter. Defaults to track if not provided.'
-                        }
-                }
-            },
-            additionalProperties: false,
-            required: [
-                "query"
-            ]
+        name: 'play',
+        description: 'Plays the given song on spotify, if no song is provided, it will resume the current playback.',
+        parameters: {
+            type: 'object',
+            properties: {
+                query: 
+                    {
+                    type: 'string',
+                    description: 'The name of the song, album or artist to play. If not provided, it will resume the current playback.'
+                    },
+                type: 
+                    {
+                    type: 'string',
+                    enum: ['track', 'album', 'artist'],
+                    description: 'The type of the query parameter. Defaults to track if not provided.'
+                    }
+            }
+        },
+        additionalProperties: false,
+        required: [
+            "query"
+        ]
     },
     {
         type: 'function',
@@ -77,7 +80,7 @@ export const media_tools = [
         description: 'Skips to the next or previous song.',
         parameters: {
             type: 'object',
-            properties: {
+            properties:{
                 type: 
                 {
                     type: 'string',
@@ -159,18 +162,24 @@ export const google_tools = [
         name: 'getCalendarEvents',
         description: 'Gets events from specified calendar. If startDate is not provided, it will return events starting from current date. If dayAmount is not provided, it will default to 1 day.',
         parameters: {
-            calendarType: {
-                type: 'string',
-                enum: ['primary', 'shared', 'all'],
-                description: 'The calendar to get events from'
-            },
-            startDate: {
-                type: 'string',
-                description: 'The date to start getting the events from in ISO format (YYYY-MM-DD). If not provided, it will default to current date.'
-            },
-            dayAmount: {
-                type: 'number',
-                description: 'The number of days to get events for. If not provided, it will default to 1 day.'
+            type: 'object',
+            properties: {
+                calendarType: 
+                {
+                    type: 'string',
+                    enum: ['primary', 'shared', 'all'],
+                    description: 'The calendar to get events from'
+                },
+                startDate: 
+                {
+                    type: 'string',
+                    description: 'The date to start getting the events from in ISO format (YYYY-MM-DD). If not provided, it will default to current date.'
+                },
+                dayAmount: 
+                {
+                    type: 'number',
+                    description: 'The number of days to get events for. If not provided, it will default to 1 day.'
+                }
             }
         },
         additionalProperties: false,
@@ -181,26 +190,34 @@ export const google_tools = [
         name: 'createCalendarEvent',
         description: 'Creates a calendar event in specified calendar.',
         parameters: {
-            calendarType: {
-                type: 'string',
-                enum: ['primary', 'shared'],
-                description: 'The calendar to create event in'
-            },
-            title: {
-                type: 'string',
-                description: 'The title of the event'
-            },
-            start: {
-                type: 'string',
-                description: 'The start date and time of the event in ISO format (YYYY-MM-DDTHH:mm:ss).'
-            },
-            fullDay: {
-                type: 'boolean',
-                description: 'Whether the event is a full day event. If true, the time part of start parameter will be ignored.'
-            },
-            duration: {
-                type: 'number',
-                description: 'The duration of the event. If fullDay is true, the duration will be in days. If fullDay is false, the duration will be in minutes.'
+            type: 'object',
+            properties: {
+                calendarType: 
+                {
+                    type: 'string',
+                    enum: ['primary', 'shared'],
+                    description: 'The calendar to create event in'
+                },
+                title: 
+                {
+                    type: 'string',
+                    description: 'The title of the event'
+                },
+                start: 
+                {
+                    type: 'string',
+                    description: 'The start date and time of the event in ISO format (YYYY-MM-DDTHH:mm:ss).'
+                },
+                fullDay: 
+                {
+                    type: 'boolean',
+                    description: 'Whether the event is a full day event. If true, the time part of start parameter will be ignored.'
+                },
+                duration: 
+                {
+                    type: 'number',
+                    description: 'The duration of the event. If fullDay is true, the duration will be in days. If fullDay is false, the duration will be in minutes.'
+                }
             }
         },
         additionalProperties: false,
@@ -217,9 +234,13 @@ export const google_tools = [
         name: 'deleteCalendarEvent',
         description: 'Deletes a calendar event with specified id.',
         parameters: {
-            id: {
-                type: 'string',
-                description: 'The id of the event to delete'
+            type: 'object',
+            properties: {
+                id: 
+                {
+                    type: 'string',
+                    description: 'The id of the event to delete'
+                }
             }
         },
         additionalProperties: false,
@@ -230,9 +251,13 @@ export const google_tools = [
         name: 'getMail',
         description: 'Gets specified amount of latest mails. It returns id, from and subject of each mail.',
         parameters: {
-            quantity: {
-                type: 'number',
-                description: 'The amount of latest mails to get. If not provided, it will default to 10.'
+            type: 'object',
+            properties: {
+                quantity: 
+                {
+                    type: 'number',
+                    description: 'The amount of latest mails to get. If not provided, it will default to 10.'
+                }
             }
         },
         additionalProperties: false,
@@ -243,9 +268,13 @@ export const google_tools = [
         name: 'getFullMail',
         description: 'Gets full content of the mail with specified id.',
         parameters: {
-            id: {
-                type: 'string',
-                description: 'The id of the mail to get'
+            type: 'object',
+            properties: {
+                id: 
+                {
+                    type: 'string',
+                    description: 'The id of the mail to get'
+                }
             }
         },
         additionalProperties: false,
@@ -256,17 +285,23 @@ export const google_tools = [
         name: 'createMailDraft',
         description: 'Creates a mail draft with specified to, subject and message.',
         parameters: {
-            to: {
-                type: 'string',
-                description: 'The recipient of the mail'
-            },
-            subject: {
-                type: 'string',
-                description: 'The subject of the mail'
-            },
-            message: {
-                type: 'string',
-                description: 'The content of the mail'
+            type: 'object',
+            properties: 
+            {
+                to: {
+                    type: 'string',
+                    description: 'The recipient of the mail'
+                },
+                subject: 
+                {
+                    type: 'string',
+                    description: 'The subject of the mail'
+                },
+                message: 
+                {
+                    type: 'string',
+                    description: 'The content of the mail'
+                }
             }
         },
         additionalProperties: false,
@@ -281,9 +316,13 @@ export const google_tools = [
         name: 'sendMailDraft',
         description: 'Sends the mail draft with specified id.',
         parameters: {
-            id: {
-                type: 'string',
-                description: 'The id of the draft to send'
+            type: 'object',
+            properties: {
+                id: 
+                {
+                    type: 'string',
+                    description: 'The id of the draft to send'
+                }
             }
         },
         additionalProperties: false,
