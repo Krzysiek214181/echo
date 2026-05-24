@@ -3,14 +3,16 @@ import path from 'path';
 import fs from 'fs/promises';
 import readline from 'readline';
 
-import { log, logError, __dirname } from './utilities.js';
+import { log, logError, __dirname } from '../utilities.js';
 
 type ParsedEvent = {
+    id: string;
+    iCalUID?: string;
     title: string;
     start?: string;
     end?: string;
 };
-type CalendarType = "private" | "shared" | "all";
+export type CalendarType = "private" | "shared" | "all";
 
 export class GoogleService  {
     private tokenPath = path.join(__dirname, "tokens", ".googleToken.json");
@@ -73,11 +75,10 @@ export class GoogleService  {
         };
     };
 
-    //check events for dayAmount number of days staring from startDate
+    //check events for dayAmount number of days staring from startDate  
     async getCalendarEvents(calendarType: CalendarType, startDate: Date = new Date(), dayAmount: number = 1){
         try{
             let calendarIDs = [];
-            let includeDates = false;
             
             switch (calendarType) {
                 case "private":
@@ -92,7 +93,6 @@ export class GoogleService  {
                     break;
             };
 
-            if(dayAmount > 1) includeDates = true
             
             const startTime = new Date();
             startTime.setDate(startDate.getDate());
@@ -116,14 +116,14 @@ export class GoogleService  {
                 if(calendarEvents.data.items) events.push(...calendarEvents.data.items);
             }));
 
-            return JSON.stringify(this.parseCalendarEvents(events || [], includeDates));
+            return JSON.stringify(this.parseCalendarEvents(events || []));
         }catch(error){
             logError(error, "error while fetching calendar events, check error_log.txt");
             return "error while fetching calendar events";
         };
     };
 
-    //creates event in the corresponding calendar, if fullDay is false, duration is in hours, if true, in days
+    //creates event in the corresponding calendar, if fullDay is false, duration is in minutes, if true, in days
     async createCalendarEvent(calendarType: Exclude<CalendarType, "all">, title: string, startDate: Date, fullDay = false, duration?: number){
         try{
             let calendarID: string = "";
@@ -144,11 +144,12 @@ export class GoogleService  {
             if(!fullDay){
                 const startTime = new Date();
                 startTime.setDate(startDate.getDate());
+                startTime.setTime(startDate.getTime());
                 start.dateTime = startTime.toISOString();
 
                 const endTime = new Date()
                 endTime.setDate(startDate.getDate());
-                endTime.setHours(endTime.getHours() + duration);
+                endTime.setTime(startDate.getTime() + (duration * 60 * 1000));
                 end.dateTime = endTime.toISOString();
             }else{
                 const startingDate = new Date();
@@ -170,6 +171,15 @@ export class GoogleService  {
                 calendarId: calendarID,
                 requestBody: eventObject
             });
+
+            log(`New calendar event created:
+    calendarType: ${calendarType}
+    title: ${title}
+    start: ${start.dateTime || start.date}
+    end: ${end.dateTime || end.date}
+    fullDay: ${fullDay}
+    duration: ${duration}${fullDay ? " days" : " min"}`);
+
             return "event created succesfully";
         }catch(error){
             logError(error, "error while creating calendar event, check error_log.txt");
@@ -177,8 +187,41 @@ export class GoogleService  {
         };
     };
 
+    //deletes an event by id from the corresponding calendar
+   async deleteCalendarEvent(id: string) {
+           const eventsToDelete = [];
+           try {
+               for (const calendarID of ['primary', this.sharedCalendarID]) {
+                   try{
+                       const event = await this.calendar.events.get({
+                           calendarId: calendarID,
+                           eventId: id
+                       });
+                       if (event) eventsToDelete.push({event: event.data, calendarID: calendarID});
+                   }catch(error){}; // the not found error is expected here
+               }
+               if (eventsToDelete.length > 1 || eventsToDelete.length === 0) {
+                   return "cannot delete event, event not found or multiple events with the same id found";
+               }
+               else {
+                   await this.calendar.events.delete({
+                       calendarId: eventsToDelete[0].calendarID,
+                       eventId: id
+                   });
+                   log(`Calendar event deleted: 
+    id: ${id}
+    calendarID: ${eventsToDelete[0].calendarID}
+    title: ${eventsToDelete[0].event.summary}`);
+                   return "event deleted successfully";
+               };
+           }
+           catch (error) {
+               logError(error, "error while deleting calendar event, check error_log.txt");
+           };
+    };
+
     //get the id, from and subject of quantity latest mails
-    async getMail(quantity: number){
+    async getMail(quantity: number = 10){
         try{
             const response = await this.gmail.users.messages.list({
                 userId: "me",
@@ -186,7 +229,10 @@ export class GoogleService  {
                 q: "is:unread"
             });
 
-            if (!response.data.messages) return "error while getting messages";
+            if (!response.data.messages){
+                logError("error while getting mail, no messages found", "error while getting mail, no messages found");
+                return;
+            }
 
             const parsedMails = await Promise.all(response.data.messages.map(async (message) => {
                 if (!message.id) {
@@ -216,6 +262,7 @@ export class GoogleService  {
         };
     };
 
+    //get the full contents of a mail by id
     async getFullMail(id: string){
         try{
             const response = await this.gmail.users.messages.get({
@@ -244,19 +291,64 @@ export class GoogleService  {
         }
     };
 
+    //creates a draft on an email, return the draft id
+    async createMailDraft(to: string, subject: string, message: string){
+       try{
+            const messageParts = [
+                "To: " + to,
+                "Subject: " + subject,
+                "Mime-Version: 1.0",
+                "Content-Type: text/plain; charset=utf-8",
+                "",
+                message
+            ];
+
+            const joinedMessage = messageParts.join("\n");
+
+            const encodedMessage = Buffer.from(joinedMessage).toString("base64").replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+            const response = await this.gmail.users.drafts.create({
+                userId: "me",
+                requestBody: {
+                    message: {
+                        raw: encodedMessage
+                    }
+                }
+            });
+            return response.data.id;
+        }catch(error){
+            logError(error, "error while creating mail draft, check error_log.txt");
+        }
+    };
+
+    //sends a draft email by id
+    async sendMailDraft(id: string){
+        try{
+            const response = await this.gmail.users.drafts.send({
+                userId: "me",
+                requestBody: {
+                    id: id
+                }});
+        }catch(error){
+            logError(error, "error while sending mail draft, check error_log.txt");
+        }
+    };
+
     //helper function for getCalendarEvents()
-    private parseCalendarEvents(events: calendar_v3.Schema$Event[], includeDates = false){
+    private parseCalendarEvents(events: calendar_v3.Schema$Event[]){
         const parsedEvents = events.map((event) =>{
             const parsedEvent: ParsedEvent = {
+                id: event.id as string,
                 title: event.summary as string
             };
 
-            if(event.start?.dateTime && event.end?.dateTime){
+            if(event.start?.dateTime && event.end?.dateTime){``
                 parsedEvent.start = event.start.dateTime;
                 parsedEvent.end = event.end?.dateTime;
-            }else if(includeDates && event.start?.date && event.end?.date){
+            }else if(event.start?.date && event.end?.date){
                 parsedEvent.start = event.start?.date;
-                parsedEvent.end = event.end?.date;
+                const [endYear, endMonth, endDay] = event.end.date.split("-");
+                parsedEvent.end = `${endYear}-${endMonth}-${Number(endDay) - 1}`; // subtract 1 from end date because full day events end at 00:00 of the next day
             };
 
             return parsedEvent;

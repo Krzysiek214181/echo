@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import path from 'path';
 import fs from 'fs/promises';
 import readline from 'readline';
-import { log, logError, __dirname } from './utilities.js';
+import { log, logError, __dirname } from '../utilities.js';
 export class GoogleService {
     constructor(clientId, clientSecret, redirectUri, sharedCalendarID, timezone) {
         this.clientId = clientId;
@@ -59,7 +59,7 @@ export class GoogleService {
         ;
     }
     ;
-    //check events for dayAmount number of days staring from startDate
+    //check events for dayAmount number of days staring from startDate  
     async getCalendarEvents(calendarType, startDate = new Date(), dayAmount = 1) {
         try {
             let calendarIDs = [];
@@ -206,7 +206,7 @@ export class GoogleService {
     }
     ;
     //get the id, from and subject of quantity latest mails
-    async getMail(quantity) {
+    async getMail(quantity = 10) {
         try {
             const response = await this.gmail.users.messages.list({
                 userId: "me",

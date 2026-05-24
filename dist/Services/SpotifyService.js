@@ -1,7 +1,7 @@
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import fs from 'fs/promises';
-import { _PORT } from './app.js';
-import { logError, __dirname, log } from './utilities.js';
+import { _PORT } from '../app.js';
+import { logError, __dirname, log } from '../utilities.js';
 import path from 'path';
 export class SpotifyService {
     constructor(clientId, clientSecret, redirectUri, preferedDevice) {

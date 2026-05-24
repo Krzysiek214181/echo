@@ -11,15 +11,19 @@
   "author": "krzysztof szklarski",
   "license": "ISC",
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.36.0",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "googleapis": "^159.0.0",
-    "openai": "^5.16.0"
+    "openai": "^5.16.0",
+    "readline": "^1.3.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
+    "@types/ws": "^8.18.1",
     "typescript": "^5.9.2"
   }
 }

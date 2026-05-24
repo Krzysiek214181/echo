@@ -1,9 +1,9 @@
 import { MaxInt, SpotifyApi } from '@spotify/web-api-ts-sdk';
 
 import fs from 'fs/promises';
-import { _PORT } from './app.js';
+import { _PORT } from '../app.js';
 import { Response, Request } from 'express';
-import { logError, __dirname, log } from './utilities.js';
+import { logError, __dirname, log } from '../utilities.js';
 import path from 'path';
 
 type parsedSearch = {name: string; uri: string; artist?: string; album?: string;}[];
@@ -23,7 +23,7 @@ export class SpotifyService{
         this.token = JSON.parse(savedToken);
         await this.refreshAccessToken();
         await this.setToken();
-        log("Spotify authenticated successfully with saved token");
+            log("Spotify authenticated successfully with saved token");
         }catch(err){
             console.log(`authorize spotify here: http://127.0.0.1:${_PORT}/authorizeSpotify`);
         };
@@ -135,6 +135,36 @@ export class SpotifyService{
         };
     };
 
+    async getAllDevices(){
+        try{
+            const response = await this.spotify.player.getAvailableDevices();
+            log("available spotify devices:" + response.devices.map(device => device.name).join(", "));
+        }
+        catch(error){
+            logError(error, "error while getting spotify devices, check error_log.txt");
+        }
+    }
+
+    async getDeviceId(){
+        try{
+            const response = await this.spotify.player.getAvailableDevices();
+            let deviceId: string = "";
+
+            if(this.preferedDevice) deviceId = this.preferedDevice; // set as fallback if no other device is active
+            
+            for(const device of response.devices){
+                if(device.is_active){
+                    if(device.id) deviceId = device.id
+                };
+            }
+            return deviceId;
+        }
+        catch(error){
+            logError(error, "error while getting spotify devices, check error_log.txt");
+            return null;
+        };
+    }
+
     async search(query: string, type: "track" | "album" | "artist" = "track", limit: MaxInt<50> = 5) {
         try{
             const response = await this.spotify.search(query, [type], undefined, limit);
@@ -182,17 +212,11 @@ export class SpotifyService{
     async play(query?: string, type: "track" | "album" | "artist" = "track"){
         try{
             const response = await this.spotify.player.getAvailableDevices();
-            let deviceId: string = "";
             let contextUri: string | undefined = undefined;
             let uri: string[] | undefined = undefined;
+            const deviceId = await this.getDeviceId();
 
-            if(this.preferedDevice) deviceId = this.preferedDevice; // set as fallback if no other device is active
-            
-            for(const device of response.devices){
-                if(device.is_active){
-                    if(device.id) deviceId = device.id
-                };
-            };
+            if(!deviceId) return "no active spotify device found";
 
             if(query){
             const result = await this.search(query, type, 1);
@@ -215,6 +239,41 @@ export class SpotifyService{
         };
     };
 
+    async pause(){
+        try{
+            const deviceId = await this.getDeviceId();
+            if(!deviceId) return "no active spotify device found";
+
+            await this.spotify.player.pausePlayback(deviceId);
+            return "playback paused succesfully";
+        }
+        catch(error: any){
+            if(!error.message.includes("JSON")){
+                logError(error, "error while pausing spotify playback, check error_log.txt");
+                return "error while pausing playback";
+            }
+            return "playback paused succesfully";
+        };
+    };
+
+    async skip(type: "forward" | "back" = "forward"){
+        try{
+            const deviceId = await this.getDeviceId();
+            if(!deviceId) return "no active spotify device found";
+            if(type === "back"){
+                await this.spotify.player.skipToPrevious(deviceId);
+            }else{
+                await this.spotify.player.skipToNext(deviceId);
+            }
+        }
+        catch(error: any){
+            if(!error.message.includes("JSON")){
+                logError(error, "error while skipping spotify track, check error_log.txt");
+                return "error while skipping track";
+            }
+        }
+    }
+
     async addtoQueue(query: string){
         try{
             const result = await this.search(query, undefined, 1);
@@ -234,8 +293,9 @@ export class SpotifyService{
             await this.spotify.player.togglePlaybackShuffle(state);
         }catch(error: any){
             if (!error.message.includes("Unexpected")) logError(error, "error while toggling spotify shuffle, check error_log.txt");
-            //ignore sdk bug
+            //ignore sdk bugclear
         };
     };
+
 };
 
