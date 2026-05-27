@@ -2,7 +2,7 @@ import { getEnvVar, log, logError } from "../utilities.js";
 import { ResponseOutputItem } from "openai/resources/responses/responses.js";
 import { openai } from "../app.js";
 
-type ToolHandler = (args: any) => Promise<any>;
+type ToolHandler = (args: any) => Promise<any> | string;
 
 export enum AgentCodes{
     SUCCESS = 0,

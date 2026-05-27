@@ -55,4 +55,4 @@ export async function ensureDirectory(dirname: string){
             logError(error);
         };
     };
-}
+};

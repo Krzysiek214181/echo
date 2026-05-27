@@ -1,7 +1,11 @@
-export const conversationPrompt = `your name is echo, you're an AI assistant, if you know the answer, answer consisely, if the task requires you to use tools, use them.`;
+import fs from 'fs/promises';
+import { __dirname } from '../utilities.js';
+import path from 'path';
 
-export const roomPrompt = ``;
+async function loadPrompt(filename: string): Promise<string>{
+    return await fs.readFile(path.join(__dirname, 'prompts', filename), 'utf-8');
+};
 
-export const mediaPrompt = ``;
-
-export const googlePrompt = ``;
+export const conversationPrompt = await loadPrompt('conversationPrompt.txt');
+export const googlePrompt = await loadPrompt('googlePrompt.txt');
+export const mediaPrompt = await loadPrompt('mediaPrompt.txt');

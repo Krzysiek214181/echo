@@ -16,6 +16,7 @@ export class ConversationAgent extends BaseAgent{
     protected tools = {
         'mediaAgent': async (args: any) => this.MediaAgent.run([{role: 'user', content: args.message}]),
         'googleAgent': async (args: any) => this.GoogleAgent.run([{role: 'user', content: args.message}]),
-        'clearSession': async (args: any) => {} //TODO: implement session clearing
+        'getCurrentDateTime': () => new Date().toISOString(),
+        'clearSession': async (args: any) => {}, //TODO: implement session clearing
     };
 };

@@ -4,7 +4,7 @@ import { media_tools } from "./toolDefinitions.js";
 import { mediaPrompt } from "./prompts.js";
 
 export class MediaAgent extends BaseAgent{
-    protected model = 'gpt-4o';
+    protected model = 'gpt-5-nano';
     protected toolDefinitions = media_tools;
     protected systemPrompt = mediaPrompt;
 

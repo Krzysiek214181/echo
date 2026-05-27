@@ -93,7 +93,6 @@ export class GoogleService  {
                     break;
             };
 
-            
             const startTime = new Date();
             startTime.setDate(startDate.getDate());
             startTime.setHours(0, 0, 0, 0);

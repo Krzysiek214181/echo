@@ -38,6 +38,14 @@ export const router_tools = [
         parameters: {},
         additionalProperties: false,
         required: []
+    },
+    {
+        type: 'function',
+        name: 'getCurrentDateTime',
+        description: 'Gets the current date and time in ISO format.',
+        parameters: {},
+        additionalProperties: false,
+        required: []
     }
 ];
 export const media_tools = [
@@ -159,7 +167,7 @@ export const google_tools = [
                 },
                 startDate: {
                     type: 'string',
-                    description: 'The date to start getting the events from in ISO format (YYYY-MM-DD). If not provided, it will default to current date.'
+                    description: 'The date to start getting the events from in ISO format (YYYY-MM-DD). if asked for todays events, ignore.'
                 },
                 dayAmount: {
                     type: 'number',
@@ -179,7 +187,7 @@ export const google_tools = [
             properties: {
                 calendarType: {
                     type: 'string',
-                    enum: ['primary', 'shared'],
+                    enum: ['private', 'shared'],
                     description: 'The calendar to create event in'
                 },
                 title: {
@@ -242,7 +250,7 @@ export const google_tools = [
         required: []
     },
     {
-        typ: 'function',
+        type: 'function',
         name: 'getFullMail',
         description: 'Gets full content of the mail with specified id.',
         parameters: {
@@ -300,6 +308,14 @@ export const google_tools = [
         },
         additionalProperties: false,
         required: ["id"]
+    },
+    {
+        type: 'function',
+        name: 'getCurrentDateTime',
+        description: 'Gets the current date and time in ISO format.',
+        parameters: {},
+        additionalProperties: false,
+        required: []
     }
 ];
 export const room_tools = [];

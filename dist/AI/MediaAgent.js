@@ -5,7 +5,7 @@ export class MediaAgent extends BaseAgent {
     constructor(spotifyService) {
         super();
         this.spotifyService = spotifyService;
-        this.model = 'gpt-4o';
+        this.model = 'gpt-5-nano';
         this.toolDefinitions = media_tools;
         this.systemPrompt = mediaPrompt;
         this.tools = {
