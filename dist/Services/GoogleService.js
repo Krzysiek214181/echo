@@ -211,7 +211,7 @@ export class GoogleService {
             const response = await this.gmail.users.messages.list({
                 userId: "me",
                 maxResults: quantity,
-                q: "is:unread"
+                q: "is:unread category:primary"
             });
             if (!response.data.messages) {
                 logError("error while getting mail, no messages found", "error while getting mail, no messages found");
@@ -339,8 +339,19 @@ export class GoogleService {
     }
     ;
     parseMailMessage(headersData, id) {
+        const dateHeader = headersData.find(h => h.name === "Date")?.value;
         const subject = headersData.find(h => h.name === "Subject")?.value;
         const from = headersData.find(h => h.name === "From")?.value;
+        if (dateHeader) {
+            const date = new Date(dateHeader).toLocaleString();
+            return {
+                id: id,
+                from: from,
+                subject: subject,
+                date: date
+            };
+        }
+        ;
         return {
             id: id,
             from: from,

@@ -23,7 +23,7 @@ export async function log(content: string, isError = false){
         };
         logContent += `[${new Date().toISOString()}] ${content}\n`
         await fs.appendFile(path.join(__dirname, "logs", "log.txt"), logContent, { flag: 'a+' });
-    } catch (error) {
+    }catch (error) {
         logError(error);
     };
 };

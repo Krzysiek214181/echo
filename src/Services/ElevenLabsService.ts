@@ -16,12 +16,8 @@ export class ElevenLabsService{
                 text: text,
                 modelId: 'eleven_flash_v2',
                 outputFormat: 'mp3_44100_128'
-        });
-
-        
-
-        return audioStream
-        
+            });
+            return audioStream
         }catch(error){
             logError(error, "Error in ElevenLabsService textToSpeech method");
             return "ERROR";

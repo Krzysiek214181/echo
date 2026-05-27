@@ -16,7 +16,7 @@ export class GoogleAgent extends BaseAgent {
             'getFullMail': (args) => this.googleService.getFullMail(args.id),
             'createMailDraft': (args) => this.googleService.createMailDraft(args.to, args.subject, args.message),
             'sendMailDraft': (args) => this.googleService.sendMailDraft(args.id),
-            'getCurrentDateTime': () => new Date().toISOString()
+            'getCurrentDateTime': () => new Date().toLocaleString()
         };
     }
     ;

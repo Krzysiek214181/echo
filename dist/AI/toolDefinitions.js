@@ -33,6 +33,14 @@ export const router_tools = [
     },
     {
         type: 'function',
+        name: 'getDailyBriefPrompt',
+        description: 'Return all of the data needed to create a daily brief, after receiving this data, create a concise and informative brief for the user. This tool should be used only upon request',
+        parameters: {},
+        additionalProperties: false,
+        required: []
+    },
+    {
+        type: 'function',
         name: 'clearSession',
         description: 'Only use this tool if the user asks you to do so or if there is a clear change of the topic of the conversation. It clears the current conversation so it should only be used when really necessary',
         parameters: {},

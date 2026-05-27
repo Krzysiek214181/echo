@@ -5,7 +5,7 @@ import readline from 'readline';
 
 import { log, logError, __dirname } from '../utilities.js';
 
-type ParsedEvent = {
+export type ParsedEvent = {
     id: string;
     iCalUID?: string;
     title: string;
@@ -225,7 +225,7 @@ export class GoogleService  {
             const response = await this.gmail.users.messages.list({
                 userId: "me",
                 maxResults: quantity,
-                q: "is:unread"
+                q: "is:unread category:primary"
             });
 
             if (!response.data.messages){
@@ -334,7 +334,7 @@ export class GoogleService  {
     };
 
     //helper function for getCalendarEvents()
-    private parseCalendarEvents(events: calendar_v3.Schema$Event[]){
+    private parseCalendarEvents(events: calendar_v3.Schema$Event[]): ParsedEvent[]{
         const parsedEvents = events.map((event) =>{
             const parsedEvent: ParsedEvent = {
                 id: event.id as string,
@@ -356,8 +356,18 @@ export class GoogleService  {
     };
 
     private parseMailMessage(headersData: gmail_v1.Schema$MessagePartHeader[], id: string){
+        const dateHeader = headersData.find(h => h.name === "Date")?.value
         const subject = headersData.find(h => h.name === "Subject")?.value;
         const from = headersData.find(h => h.name === "From")?.value;
+        if(dateHeader){
+            const date = new Date(dateHeader).toLocaleString();
+            return {
+                id: id,
+                from: from,
+                subject: subject,
+                date: date
+            };
+        };
 
         return {
             id: id,

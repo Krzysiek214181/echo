@@ -8,6 +8,7 @@ import { getEnvVar, logError, log, __dirname, ensureDirectory } from "./utilitie
 import { GoogleService } from "./Services/GoogleService.js";
 import { SpotifyService } from "./Services/SpotifyService.js";
 import { ConversationAgent } from "./AI/ConversationAgent.js";
+import { DailyBriefService } from "./Services/DailyBriefService.js";
 import { GoogleAgent } from "./AI/GoogleAgent.js";
 import { MediaAgent } from "./AI/MediaAgent.js";
 import { AgentCodes } from "./AI/BaseAgent.js";
@@ -49,14 +50,14 @@ const googleService = new GoogleService(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, 
 await googleService.init();
 const spotifyService = new SpotifyService(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT, SPOTIFY_DEFAULT_DEVICE);
 await spotifyService.init();
+const dailyBriefService = new DailyBriefService(googleService);
 const googleAgent = new GoogleAgent(googleService);
 const mediaAgent = new MediaAgent(spotifyService);
-const conversationAgent = new ConversationAgent(mediaAgent, googleAgent);
+const conversationAgent = new ConversationAgent(mediaAgent, googleAgent, dailyBriefService);
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-log("app started, waiting for prompt");
 let messages = [];
 async function handlePrompt(prompt) {
     messages.push({ role: 'user', content: prompt });
@@ -99,4 +100,5 @@ function ask() {
     });
 }
 ;
+log("app started, waiting for prompt");
 ask();
