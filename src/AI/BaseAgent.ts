@@ -84,8 +84,8 @@ export abstract class BaseAgent{
                         return {code: AgentCodes.ERROR, content:"there's been an error, check error_log.txt for details"};
                     };
 
-                    const function_call_result = await toolHandler.handler(args);
                     log(`tool "${function_call.name}" called with arguments ${JSON.stringify(args)}`);
+                    const function_call_result = await toolHandler.handler(args);
 
                     function pushToolOutput(call_id: string, content: string){
                         tool_outputs.push({

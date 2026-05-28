@@ -1,6 +1,8 @@
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import { logError } from "../utilities.js";
 export class ElevenLabsService {
+    voiceID;
+    client;
     constructor(apiKey, voiceID) {
         this.voiceID = voiceID;
         this.client = new ElevenLabsClient({

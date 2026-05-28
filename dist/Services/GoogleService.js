@@ -4,14 +4,22 @@ import fs from 'fs/promises';
 import readline from 'readline';
 import { log, logError, __dirname } from '../utilities.js';
 export class GoogleService {
+    clientId;
+    clientSecret;
+    redirectUri;
+    sharedCalendarID;
+    timezone;
+    tokenPath = path.join(__dirname, "tokens", ".googleToken.json");
+    oAuth2Client;
+    scopes = ['https://www.googleapis.com/auth/calendar.events', 'https://mail.google.com/'];
+    calendar;
+    gmail;
     constructor(clientId, clientSecret, redirectUri, sharedCalendarID, timezone) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
         this.sharedCalendarID = sharedCalendarID;
         this.timezone = timezone;
-        this.tokenPath = path.join(__dirname, "tokens", ".googleToken.json");
-        this.scopes = ['https://www.googleapis.com/auth/calendar.events', 'https://mail.google.com/'];
         this.oAuth2Client = new google.auth.OAuth2(this.clientId, this.clientSecret, this.redirectUri);
     }
     ;

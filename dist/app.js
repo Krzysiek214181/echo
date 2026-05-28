@@ -8,7 +8,7 @@ import { getEnvVar, logError, log, __dirname, ensureDirectory } from "./utilitie
 import { GoogleService } from "./Services/GoogleService.js";
 import { SpotifyService } from "./Services/SpotifyService.js";
 import { ConversationAgent } from "./AI/ConversationAgent.js";
-import { DailyBriefService } from "./Services/DailyBriefService.js";
+import { DailyBrief } from "./AI/DailyBrief.js";
 import { GoogleAgent } from "./AI/GoogleAgent.js";
 import { MediaAgent } from "./AI/MediaAgent.js";
 import { AgentCodes } from "./AI/BaseAgent.js";
@@ -50,7 +50,7 @@ const googleService = new GoogleService(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, 
 await googleService.init();
 const spotifyService = new SpotifyService(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT, SPOTIFY_DEFAULT_DEVICE);
 await spotifyService.init();
-const dailyBriefService = new DailyBriefService(googleService);
+const dailyBriefService = new DailyBrief(googleService);
 const googleAgent = new GoogleAgent(googleService);
 const mediaAgent = new MediaAgent(spotifyService);
 const conversationAgent = new ConversationAgent(mediaAgent, googleAgent, dailyBriefService);
@@ -89,7 +89,7 @@ function ask() {
             else {
                 messages = response?.content;
                 if (response?.code === AgentCodes.SUCCESS) { // we only log the response here, if code is SUCCESS_FINAL, the response has already been logged
-                    console.log(messages?.[messages.length - 1].content);
+                    console.log(messages?.at(-1).content);
                 }
                 ;
             }

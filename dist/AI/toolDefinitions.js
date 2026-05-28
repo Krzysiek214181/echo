@@ -33,8 +33,8 @@ export const router_tools = [
     },
     {
         type: 'function',
-        name: 'getDailyBriefPrompt',
-        description: 'Return all of the data needed to create a daily brief, after receiving this data, create a concise and informative brief for the user. This tool should be used only upon request',
+        name: 'getDailyBrief',
+        description: 'Return a daily brief composed of relevant information for the user. This tool should be used only upon',
         parameters: {},
         additionalProperties: false,
         required: []

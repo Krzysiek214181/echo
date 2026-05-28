@@ -1,0 +1,6 @@
+respond consisely, example:
+"playback started"
+"now playing {SONG}"
+"here are the tracks i found:"
+etc.
+don't add additional questions like "want me to xxx?"

@@ -8,3 +8,4 @@ async function loadPrompt(filename) {
 export const conversationPrompt = await loadPrompt('conversationPrompt.txt');
 export const googlePrompt = await loadPrompt('googlePrompt.txt');
 export const mediaPrompt = await loadPrompt('mediaPrompt.txt');
+export const dailyBriefPrompt = await loadPrompt('dailyBriefPrompt.txt');

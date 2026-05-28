@@ -117,7 +117,7 @@ export class SpotifyService{
                 return;
             };
 
-            const newToken = await response.json();
+            const newToken: any = await response.json();
             const newAccessToken = newToken.access_token;
 
             this.token.access_token = newAccessToken;

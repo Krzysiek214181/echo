@@ -1,8 +1,35 @@
 import { logError } from "../utilities.js";
-export class DailyBriefService {
+import { AgentCodes, BaseAgent } from "./BaseAgent.js";
+import { dailyBriefPrompt } from "./prompts.js";
+export class DailyBrief extends BaseAgent {
+    googleService;
     constructor(googleService) {
+        super();
         this.googleService = googleService;
-        this.lastBriefDate = null;
+    }
+    ;
+    lastBriefDate = null;
+    model = 'gpt-4o-mini';
+    tools = {};
+    toolDefinitions = [];
+    systemPrompt = dailyBriefPrompt;
+    async generateDailyBrief() {
+        try {
+            const prompt = await this.generateDailyBriefPrompt();
+            const response = await this.run([{ role: 'user', content: prompt }]);
+            if (response?.code === AgentCodes.ERROR) {
+                return "an error has occured while generating the daily brief, check error_log.txt for details";
+            }
+            else {
+                return response?.content.at(-1).content ?? "no daily brief generated";
+            }
+            ;
+        }
+        catch (error) {
+            logError(error, "Error in DailyBrief generateDailyBrief method, check error_log.txt for details");
+            return "an error has occured while generating the daily brief, check error_log.txt for details";
+        }
+        ;
     }
     ;
     async generateDailyBriefPrompt() {

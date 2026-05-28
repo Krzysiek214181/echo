@@ -4,13 +4,19 @@ import { _PORT } from '../app.js';
 import { logError, __dirname, log } from '../utilities.js';
 import path from 'path';
 export class SpotifyService {
+    clientId;
+    clientSecret;
+    redirectUri;
+    preferedDevice;
+    scopes = ["user-modify-playback-state", "user-read-playback-state", "user-read-currently-playing", "playlist-read-private", "user-top-read", "user-read-recently-played", "user-read-private"];
+    spotify;
+    tokenPath = path.join(__dirname, "tokens", ".spotifyToken.json");
+    token;
     constructor(clientId, clientSecret, redirectUri, preferedDevice) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
         this.preferedDevice = preferedDevice;
-        this.scopes = ["user-modify-playback-state", "user-read-playback-state", "user-read-currently-playing", "playlist-read-private", "user-top-read", "user-read-recently-played", "user-read-private"];
-        this.tokenPath = path.join(__dirname, "tokens", ".spotifyToken.json");
     }
     ;
     async init() {
