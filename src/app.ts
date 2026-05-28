@@ -109,7 +109,9 @@ function ask(){
             }
             else{
                 messages = response?.content;
-                log(messages?.[messages.length - 1].content[0].text);
+                if(response?.code === AgentCodes.SUCCESS){ // we only log the response here, if code is SUCCESS_FINAL, the response has already been logged
+                    console.log(messages?.[messages.length - 1].content);
+                };
             };
         }
         catch(error){

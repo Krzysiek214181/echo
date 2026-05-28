@@ -1,4 +1,4 @@
-import { BaseAgent } from "./BaseAgent.js";
+import { BaseAgent, ToolResponseType } from "./BaseAgent.js";
 import { SpotifyService } from "../Services/SpotifyService.js";
 import { media_tools } from "./toolDefinitions.js";
 import { mediaPrompt } from "./prompts.js";
@@ -13,11 +13,11 @@ export class MediaAgent extends BaseAgent{
     };
 
     protected tools = {
-        'play': async (args: any) => this.spotifyService.play(args.query, args.type),
-        'pause': async (args: any) => this.spotifyService.pause(),
-        'skip': async (args: any) => this.spotifyService.skip(args.type),
-        'addtoQueue': async (args: any) => this.spotifyService.addtoQueue(args.query),
-        'toggleShuffle': async (args: any) => this.spotifyService.toggleShuffle(args.state),
-        'search': async (args: any) => this.spotifyService.search(args.query, args.type, args.limit)
+        'play': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.play(args.query, args.type)},
+        'pause': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.pause()},
+        'skip': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.skip(args.type)},
+        'addtoQueue': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.addtoQueue(args.query)},
+        'toggleShuffle': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.toggleShuffle(args.state)},
+        'search': {type: ToolResponseType.CONTEXT, handler: async (args: any) => this.spotifyService.search(args.query, args.type, args.limit)}
     };
 };
