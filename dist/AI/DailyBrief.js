@@ -75,7 +75,7 @@ export class DailyBrief extends BaseAgent {
         const two_days_ms = 2 * 24 * 60 * 60 * 1000;
         while (!lastBriefReached) {
             const mailBatch = await this.googleService.getMail(10);
-            if (!mailBatch) {
+            if (!mailBatch || typeof (mailBatch) === "string") {
                 return [];
             }
             ;

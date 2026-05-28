@@ -165,7 +165,7 @@ export class SpotifyService{
         };
     }
 
-    async search(query: string, type: "track" | "album" | "artist" = "track", limit: MaxInt<50> = 5) {
+    async search(query: string, type: "track" | "album" | "artist" = "track", limit: MaxInt<50> = 5): Promise<parsedSearch | string>{
         try{
             const response = await this.spotify.search(query, [type], undefined, limit);
             let parsed: parsedSearch
@@ -209,7 +209,7 @@ export class SpotifyService{
         };
     };
 
-    async play(query?: string, type: "track" | "album" | "artist" = "track"){
+    async play(query?: string, type: "track" | "album" | "artist" = "track"): Promise<string>{
         try{
             const response = await this.spotify.player.getAvailableDevices();
             let contextUri: string | undefined = undefined;
@@ -239,7 +239,7 @@ export class SpotifyService{
         };
     };
 
-    async pause(){
+    async pause(): Promise<string>{
         try{
             const deviceId = await this.getDeviceId();
             if(!deviceId) return "no active spotify device found";
@@ -256,7 +256,7 @@ export class SpotifyService{
         };
     };
 
-    async skip(type: "forward" | "back" = "forward"){
+    async skip(type: "forward" | "back" = "forward"): Promise<string>{
         try{
             const deviceId = await this.getDeviceId();
             if(!deviceId) return "no active spotify device found";
@@ -264,36 +264,48 @@ export class SpotifyService{
                 await this.spotify.player.skipToPrevious(deviceId);
             }else{
                 await this.spotify.player.skipToNext(deviceId);
-            }
+            };
+            return "success";
         }
         catch(error: any){
             if(!error.message.includes("JSON")){
                 logError(error, "error while skipping spotify track, check error_log.txt");
                 return "error while skipping track";
             }
+            return "success";
         }
     }
 
-    async addtoQueue(query: string){
+    async addtoQueue(query: string): Promise<string>{
         try{
             const result = await this.search(query, undefined, 1);
 
             if(typeof result === "string") return result;
 
             await this.spotify.player.addItemToPlaybackQueue(result[0].uri);
+            return "added to queue";
 
         }catch(error: any){
-            if (!error.message.includes("Unexpected token")) logError(error, "error while adding to spotify queue, check error_log.txt");
+        if (!error.message.includes("Unexpected token")){
+            logError(error, "error while adding to spotify queue, check error_log.txt");
+            return "error while adding to queue";
+        };
+            return "added to queue";
             //ingore sdk bug
         };
     };
 
-    async toggleShuffle(state: boolean){
+    async toggleShuffle(state: boolean): Promise<string>{
         try{
             await this.spotify.player.togglePlaybackShuffle(state);
+            return `spotify shuffle set to ${state}`;
         }catch(error: any){
-            if (!error.message.includes("Unexpected")) logError(error, "error while toggling spotify shuffle, check error_log.txt");
-            //ignore sdk bugclear
+            if (!error.message.includes("Unexpected")){
+                 logError(error, "error while toggling spotify shuffle, check error_log.txt");
+                 return 'error while toggling spotify shuffle';
+            };
+            return `spotify shuffle set to ${state}`;
+            //ignore sdk bug
         };
     };
 

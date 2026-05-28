@@ -76,7 +76,7 @@ export class GoogleService  {
     };
 
     //check events for dayAmount number of days staring from startDate  
-    async getCalendarEvents(calendarType: CalendarType, startDate: Date = new Date(), dayAmount: number = 1){
+    async getCalendarEvents(calendarType: CalendarType, startDate: Date = new Date(), dayAmount: number = 1): Promise<string>{
         try{
             let calendarIDs = [];
             
@@ -123,7 +123,7 @@ export class GoogleService  {
     };
 
     //creates event in the corresponding calendar, if fullDay is false, duration is in minutes, if true, in days
-    async createCalendarEvent(calendarType: Exclude<CalendarType, "all">, title: string, startDate: Date, fullDay = false, duration?: number){
+    async createCalendarEvent(calendarType: Exclude<CalendarType, "all">, title: string, startDate: Date, fullDay = false, duration?: number): Promise<string>{
         try{
             let calendarID: string = "";
             let start: calendar_v3.Schema$EventDateTime = {timeZone: this.timezone};
@@ -187,7 +187,7 @@ export class GoogleService  {
     };
 
     //deletes an event by id from the corresponding calendar
-   async deleteCalendarEvent(id: string) {
+   async deleteCalendarEvent(id: string): Promise<string> {
            const eventsToDelete = [];
            try {
                for (const calendarID of ['primary', this.sharedCalendarID]) {
@@ -216,11 +216,12 @@ export class GoogleService  {
            }
            catch (error) {
                logError(error, "error while deleting calendar event, check error_log.txt");
+                return "error while deleting event";
            };
     };
 
     //get the id, from and subject of quantity latest mails
-    async getMail(quantity: number = 10){
+    async getMail(quantity: number = 10): Promise<string | Record<string, any>[]> {
         try{
             const response = await this.gmail.users.messages.list({
                 userId: "me",
@@ -230,13 +231,13 @@ export class GoogleService  {
 
             if (!response.data.messages){
                 logError("error while getting mail, no messages found", "error while getting mail, no messages found");
-                return;
+                return "error while getting mail, no messages found";
             }
 
             const parsedMails = await Promise.all(response.data.messages.map(async (message) => {
                 if (!message.id) {
                     logError("error while getting mail, no id found", "error while getting mail, no id found");
-                    return;
+                    return {}
                 };
 
                 const id = message.id;
@@ -249,7 +250,7 @@ export class GoogleService  {
 
                 if (!mail.data.payload?.headers) {
                     logError("error while getting mail, no headers found", "error while getting mail, no headers found");
-                    return;
+                    return {}
                 };
 
                 return this.parseMailMessage(mail.data.payload?.headers, id);
@@ -258,11 +259,12 @@ export class GoogleService  {
             return parsedMails;
         }catch(error){
             logError(error);
+            return "error while getting mail, check error_log.txt";
         };
     };
 
     //get the full contents of a mail by id
-    async getFullMail(id: string){
+    async getFullMail(id: string): Promise<string> {
         try{
             const response = await this.gmail.users.messages.get({
                 userId: "me",
@@ -287,11 +289,12 @@ export class GoogleService  {
             return Buffer.from(base64, "base64").toString('utf-8');
         }catch(error){
             logError(error, "error while retrieving full mail, check error_log.txt");
+            return "error while retrieving mail";
         }
     };
 
     //creates a draft on an email, return the draft id
-    async createMailDraft(to: string, subject: string, message: string){
+    async createMailDraft(to: string, subject: string, message: string): Promise<string> {
        try{
             const messageParts = [
                 "To: " + to,
@@ -314,22 +317,25 @@ export class GoogleService  {
                     }
                 }
             });
-            return response.data.id;
+            return response.data.id ?? "error while creating mail draft, no id returned";
         }catch(error){
             logError(error, "error while creating mail draft, check error_log.txt");
+            return "error while creating mail draft";
         }
     };
 
     //sends a draft email by id
-    async sendMailDraft(id: string){
+    async sendMailDraft(id: string): Promise<string>{
         try{
             const response = await this.gmail.users.drafts.send({
                 userId: "me",
                 requestBody: {
                     id: id
                 }});
+            return "mail draft sent successfully";
         }catch(error){
             logError(error, "error while sending mail draft, check error_log.txt");
+            return "error while sending mail draft";
         }
     };
 

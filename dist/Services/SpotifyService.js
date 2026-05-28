@@ -273,12 +273,15 @@ export class SpotifyService {
             else {
                 await this.spotify.player.skipToNext(deviceId);
             }
+            ;
+            return "success";
         }
         catch (error) {
             if (!error.message.includes("JSON")) {
                 logError(error, "error while skipping spotify track, check error_log.txt");
                 return "error while skipping track";
             }
+            return "success";
         }
     }
     async addtoQueue(query) {
@@ -287,10 +290,15 @@ export class SpotifyService {
             if (typeof result === "string")
                 return result;
             await this.spotify.player.addItemToPlaybackQueue(result[0].uri);
+            return "added to queue";
         }
         catch (error) {
-            if (!error.message.includes("Unexpected token"))
+            if (!error.message.includes("Unexpected token")) {
                 logError(error, "error while adding to spotify queue, check error_log.txt");
+                return "error while adding to queue";
+            }
+            ;
+            return "added to queue";
             //ingore sdk bug
         }
         ;
@@ -299,11 +307,16 @@ export class SpotifyService {
     async toggleShuffle(state) {
         try {
             await this.spotify.player.togglePlaybackShuffle(state);
+            return `spotify shuffle set to ${state}`;
         }
         catch (error) {
-            if (!error.message.includes("Unexpected"))
+            if (!error.message.includes("Unexpected")) {
                 logError(error, "error while toggling spotify shuffle, check error_log.txt");
-            //ignore sdk bugclear
+                return 'error while toggling spotify shuffle';
+            }
+            ;
+            return `spotify shuffle set to ${state}`;
+            //ignore sdk bug
         }
         ;
     }

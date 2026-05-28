@@ -75,7 +75,7 @@ export class DailyBrief extends BaseAgent{
         while (!lastBriefReached){
             const mailBatch = await this.googleService.getMail(10);
 
-            if(!mailBatch){return [];};
+            if(!mailBatch || typeof(mailBatch) === "string"){return [];};
             //if last brief was more than 2 days ago, return only 10 latest mails
             if(this.lastBriefDate == null || Date.now() - this.lastBriefDate.getTime() > two_days_ms){
                 lastBriefReached = true;

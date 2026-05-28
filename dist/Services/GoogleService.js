@@ -209,6 +209,7 @@ export class GoogleService {
         }
         catch (error) {
             logError(error, "error while deleting calendar event, check error_log.txt");
+            return "error while deleting event";
         }
         ;
     }
@@ -223,12 +224,12 @@ export class GoogleService {
             });
             if (!response.data.messages) {
                 logError("error while getting mail, no messages found", "error while getting mail, no messages found");
-                return;
+                return "error while getting mail, no messages found";
             }
             const parsedMails = await Promise.all(response.data.messages.map(async (message) => {
                 if (!message.id) {
                     logError("error while getting mail, no id found", "error while getting mail, no id found");
-                    return;
+                    return {};
                 }
                 ;
                 const id = message.id;
@@ -239,7 +240,7 @@ export class GoogleService {
                 });
                 if (!mail.data.payload?.headers) {
                     logError("error while getting mail, no headers found", "error while getting mail, no headers found");
-                    return;
+                    return {};
                 }
                 ;
                 return this.parseMailMessage(mail.data.payload?.headers, id);
@@ -248,6 +249,7 @@ export class GoogleService {
         }
         catch (error) {
             logError(error);
+            return "error while getting mail, check error_log.txt";
         }
         ;
     }
@@ -277,6 +279,7 @@ export class GoogleService {
         }
         catch (error) {
             logError(error, "error while retrieving full mail, check error_log.txt");
+            return "error while retrieving mail";
         }
     }
     ;
@@ -301,10 +304,11 @@ export class GoogleService {
                     }
                 }
             });
-            return response.data.id;
+            return response.data.id ?? "error while creating mail draft, no id returned";
         }
         catch (error) {
             logError(error, "error while creating mail draft, check error_log.txt");
+            return "error while creating mail draft";
         }
     }
     ;
@@ -317,9 +321,11 @@ export class GoogleService {
                     id: id
                 }
             });
+            return "mail draft sent successfully";
         }
         catch (error) {
             logError(error, "error while sending mail draft, check error_log.txt");
+            return "error while sending mail draft";
         }
     }
     ;
